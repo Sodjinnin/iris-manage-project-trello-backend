@@ -18,3 +18,8 @@ api_login:
     path: /api/login
     methods: POST
     controller: App\Controller\UserController::login
+
+create_project:
+    path: /api/project/create
+    methods: POST
+    controller: App\Controller\ProjectController::create
