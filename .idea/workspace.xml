@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ae14600-d4f6-48f8-89a3-48b2d3f90b73" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,12 +29,8 @@
               <option name="branches">
                 <list>
                   <RecentBranch>
-                    <option name="branchName" value="patrick-update" />
-                    <option name="lastUsedInstant" value="1745957032" />
-                  </RecentBranch>
-                  <RecentBranch>
                     <option name="branchName" value="main" />
-                    <option name="lastUsedInstant" value="1745957031" />
+                    <option name="lastUsedInstant" value="1745957773" />
                   </RecentBranch>
                 </list>
               </option>
@@ -191,7 +187,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "patrick-update",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/user/PhpstormProjects/IRIS/trelloapp",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -225,7 +221,7 @@
       <option name="presentableId" value="Default" />
       <updated>1745919399984</updated>
       <workItem from="1745919401094" duration="5349000" />
-      <workItem from="1745950487256" duration="5460000" />
+      <workItem from="1745950487256" duration="5835000" />
     </task>
     <servers />
   </component>
