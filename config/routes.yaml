@@ -1,0 +1,20 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+api_me:
+    path: /api/me
+    methods: POST
+    controller: App\Controller\UserController::me
+
+api_register:
+    path: /api/register
+    methods: POST
+    controller: App\Controller\UserController::register
+
+api_login:
+    path: /api/login
+    methods: POST
+    controller: App\Controller\UserController::login
