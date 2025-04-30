@@ -21,11 +21,11 @@ class Task
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'createdTasks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'assignToTasks')]
     private ?User $assignTo = null;
 
     #[ORM\Column(length: 255)]
@@ -40,6 +40,12 @@ class Task
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $priority = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $scheduleDate = null;
 
     public function getId(): ?int
     {
@@ -138,6 +144,30 @@ class Task
     public function setProject(Project $project): static
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getPriority(): ?string
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(?string $priority): static
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+    public function getScheduleDate(): ?\DateTime
+    {
+        return $this->scheduleDate;
+    }
+
+    public function setScheduleDate(?\DateTime $scheduleDate): static
+    {
+        $this->scheduleDate = $scheduleDate;
 
         return $this;
     }

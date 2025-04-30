@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -11,6 +12,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 class User  implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -36,6 +39,14 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $userType = null;
+
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Task::class)]
+    private Collection $createdTasks;
+
+    public function __construct()
+    {
+        $this->createdTasks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -143,4 +154,10 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getCreatedTasks(): Collection
+    {
+        return $this->createdTasks;
+    }
+
 }
