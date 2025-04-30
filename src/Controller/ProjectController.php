@@ -205,7 +205,38 @@ final class ProjectController extends AbstractController
         ], 200);
     }
 
-    #[Route('/project/delete/{id}', name: 'delete_project', methods: ['DELETE'])]
+    #[Route('/project/find/{id}', name: 'find_project', methods: ['GET'])]
+    public function find(
+        Project $project,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
+    ): JsonResponse {
+
+        return $this->json([
+            'message' => 'Project updated successfully!',
+            'project' => [
+                'id' => $project->getId(),
+                'name' => $project->getName(),
+                'description' => $project->getDescription(),
+                'status' => $project->getStatus(),
+                'createdAt' => $project->getCreatedAt()?->format('Y-m-d H:i:s'),
+                'updatedAt' => $project->getUpdatedAt()?->format('Y-m-d H:i:s'),
+                'owner' => [
+                    'id' => $project->getOwner()?->getId(),
+                    'username' => $project->getOwner()?->getUsername(),
+                ],
+                'members' => array_map(function (User $member) {
+                    return [
+                        'id' => $member->getId(),
+                        'username' => $member->getUsername(),
+                    ];
+                }, $project->getMembers()->toArray()),
+            ]
+        ], 200);
+    }
+
+    #[Route('/api/project/delete/{id}', name: 'delete_project', methods: ['DELETE'])]
     public function delete(
         Project $project,
         EntityManagerInterface $entityManager

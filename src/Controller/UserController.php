@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
@@ -40,6 +41,21 @@ class UserController extends AbstractController
             'firstname' => $this->getUser()->getFirstname(),
             'lastname' => $this->getUser()->getLastname(),
         ]);
+    }
+
+    #[Route('/api/users', name: 'get_all_users', methods: ['GET'])]
+    public function index(EntityManagerInterface $entityManager)
+    {
+        $users = $entityManager->getRepository(User::class)->findAll();
+        $data = array_map(function(User $user) {
+            return [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'email' => $user->getEmail(),
+            ];
+        }, $users);
+
+        return new JsonResponse($data);
     }
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]

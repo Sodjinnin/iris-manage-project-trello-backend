@@ -9,6 +9,11 @@ api_me:
     methods: GET
     controller: App\Controller\UserController::me
 
+get_all_users:
+    path: /api/users
+    methods: GET
+    controller: App\Controller\UserController::index
+
 api_register:
     path: /api/register
     methods: POST
@@ -29,7 +34,18 @@ update_project:
     methods: PUT
     controller: App\Controller\ProjectController::update
 
+find_project:
+    path: /api/project/find/{id}
+    methods: GET
+    controller: App\Controller\ProjectController::find
+
 app_project:
     path: /api/project
     methods: GET
     controller: App\Controller\ProjectController::index
+
+delete_project:
+    path: /api/project/delete/{id}
+    methods: DELETE
+    controller: App\Controller\ProjectController::delete
+
