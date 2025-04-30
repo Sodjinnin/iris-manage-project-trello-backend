@@ -147,6 +147,10 @@ final class ProjectController extends AbstractController
         if (isset($data['status'])) {
             $project->setStatus($data['status']);
         }
+        if (isset($data['date'])) {
+            $project->setStatus($data['date']);
+        }
+
         if (isset($data['owner_id'])) {
             $owner = $userRepository->find($data['owner_id']);
             if (!$owner) {
@@ -156,7 +160,7 @@ final class ProjectController extends AbstractController
         }
 
         if (isset($data['member_ids']) && is_array($data['member_ids'])) {
-            $project->clearMembers();
+            $project->getMembers()->clear();
             foreach ($data['member_ids'] as $memberId) {
                 $member = $userRepository->find($memberId);
                 if ($member) {
