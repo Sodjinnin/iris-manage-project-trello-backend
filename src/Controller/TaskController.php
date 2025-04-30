@@ -35,6 +35,8 @@ class TaskController extends AbstractController
                 'name' => $project->getName(),
                 'description' => $project->getDescription(),
                 'status' => $project->getStatus(),
+                'schedule_date' => $project->getScheduleDate()?->format('Y-m-d H:i:s'),
+                'priority' => $project->getPriority(),
                 'createdAt' => $project->getCreatedAt()?->format('Y-m-d H:i:s'),
                 'updatedAt' => $project->getUpdatedAt()?->format('Y-m-d H:i:s'),
                 'creator' => [
@@ -65,8 +67,13 @@ class TaskController extends AbstractController
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['name'], $data['description'], $data['status'], $data['created_by'], $data['assign_to'], $data['project'])) {
+        if (!isset($data['name'], $data['description'], $data['status'], $data['created_by'],
+            $data['assign_to'], $data['project'])) {
             return $this->json(['error' => 'Missing data'], 400);
+        }
+
+        if (!isset($data['is_sub'])){
+            $data['is_sub'] = false;
         }
 
         $owner = $this->entityManager
@@ -92,12 +99,21 @@ class TaskController extends AbstractController
         $result->setName($data['name']);
         $result->setDescription($data['description']);
         $result->setStatus($data['status']);
+        $result->setPriority($data['priority']);
+        $result->setScheduleDate(new \DateTime($data['schedule_date']));
         $result->setCreatedAt(new \DateTime());
         $result->setUpdatedAt(new \DateTime());
         $result->setCreatedBy($owner);
         $result->setAssignTo($assign_to);
         $result->setProject($project);
+        $result->setIsSub($data['is_sub']);
 
+        if ($data['is_sub']) {
+            $task =  $this->entityManager
+                ->getRepository(Project::class)
+                ->findOneBy(['id' => $data['sub_task']]);
+            $result->addSubTask($task);
+        }
 
         $entityManager->persist($result);
         $entityManager->flush();

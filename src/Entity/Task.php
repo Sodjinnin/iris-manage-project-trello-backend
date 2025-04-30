@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -46,6 +48,27 @@ class Task
 
     #[ORM\Column(nullable: true)]
     private ?\DateTime $scheduleDate = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isSub = null;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'tasks')]
+    private Collection $subTasks;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'subTasks')]
+    private Collection $tasks;
+
+    public function __construct()
+    {
+        $this->subTasks = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -168,6 +191,69 @@ class Task
     public function setScheduleDate(?\DateTime $scheduleDate): static
     {
         $this->scheduleDate = $scheduleDate;
+
+        return $this;
+    }
+
+    public function isSub(): ?bool
+    {
+        return $this->isSub;
+    }
+
+    public function setIsSub(?bool $isSub): static
+    {
+        $this->isSub = $isSub;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getSubTasks(): Collection
+    {
+        return $this->subTasks;
+    }
+
+    public function addSubTask(self $subTask): static
+    {
+        if (!$this->subTasks->contains($subTask)) {
+            $this->subTasks->add($subTask);
+        }
+
+        return $this;
+    }
+
+    public function removeSubTask(self $subTask): static
+    {
+        $this->subTasks->removeElement($subTask);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(self $task): static
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks->add($task);
+            $task->addSubTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(self $task): static
+    {
+        if ($this->tasks->removeElement($task)) {
+            $task->removeSubTask($this);
+        }
 
         return $this;
     }
