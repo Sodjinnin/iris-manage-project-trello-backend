@@ -32,7 +32,12 @@ class UserController extends AbstractController
     #[IsGranted("ROLE_USER")]
     public function me()
     {
-        return $this->json($this->getUser());
+
+        return $this->json([
+            'id' => $this->getUser()->getId(),
+            'username' => $this->getUser()->getUsername(),
+            'email' => $this->getUser()->getEmail(),
+        ]);
     }
 
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
