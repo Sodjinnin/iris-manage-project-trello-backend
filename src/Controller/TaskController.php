@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Activity;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
@@ -83,6 +84,8 @@ class TaskController extends AbstractController
             ->getRepository(Project::class)
             ->findOneBy(['id' => $data['project']]);
 
+        $this->logActivity($project, $owner, 'created_project', "Une nouvelle tâche ajouter au projet'{$project->getName()}'");
+
 
         if (!$owner) {
             return $this->json(['error' => 'Owner not found'], 404);
@@ -126,6 +129,19 @@ class TaskController extends AbstractController
 
             ]
         ], 201);
+    }
+
+    private function logActivity(Project $project, User $user, string $action, ?string $details = null): void
+    {
+        $activity = new Activity();
+        $activity->setProject($project);
+        $activity->setUser($user);
+        $activity->setAction($action);
+        $activity->setDetails($details);
+        $activity->setCreatedAt(new \DateTimeImmutable());
+
+        $this->entityManager->persist($activity);
+        $this->entityManager->flush();
     }
 
     #[Route('/api/tasks/{id}', name: 'update_task', methods: ['PUT'])]
