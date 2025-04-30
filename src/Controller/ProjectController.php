@@ -23,7 +23,7 @@ final class ProjectController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/project', name: 'app_project', methods: ['GET'])]
+    #[Route('/api/projects', name: 'app_project', methods: ['GET'])]
     public function index(ProjectRepository $projectRepository): JsonResponse
     {
         $projects = $projectRepository->findAll();
@@ -53,7 +53,7 @@ final class ProjectController extends AbstractController
         return $this->json($projectData);
     }
 
-    #[Route('/project/create', name: 'create_project', methods: ['POST'])]
+    #[Route('/api/projects', name: 'create_project', methods: ['POST'])]
     public function create(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -128,7 +128,7 @@ final class ProjectController extends AbstractController
         ], 201);
     }
 
-    #[Route('/project/update/{id}', name: 'update_project', methods: ['PUT'])]
+    #[Route('/api/projects/{id}', name: 'update_project', methods: ['PUT'])]
     public function update(
         Project $project,
         Request $request,
@@ -205,7 +205,7 @@ final class ProjectController extends AbstractController
         ], 200);
     }
 
-    #[Route('/project/find/{id}', name: 'find_project', methods: ['GET'])]
+    #[Route('/api/projects/{id}', name: 'find_project', methods: ['GET'])]
     public function find(
         Project $project
     ): JsonResponse {
@@ -219,6 +219,7 @@ final class ProjectController extends AbstractController
                 'status' => $project->getStatus(),
                 'createdAt' => $project->getCreatedAt()?->format('Y-m-d H:i:s'),
                 'updatedAt' => $project->getUpdatedAt()?->format('Y-m-d H:i:s'),
+                'date' => $project->getDate()?->format('Y-m-d'),
                 'owner' => [
                     'id' => $project->getOwner()?->getId(),
                     'username' => $project->getOwner()?->getUsername(),
@@ -233,7 +234,7 @@ final class ProjectController extends AbstractController
         ], 200);
     }
 
-    #[Route('/api/project/delete/{id}', name: 'delete_project', methods: ['DELETE'])]
+    #[Route('/api/projects/{id}', name: 'delete_project', methods: ['DELETE'])]
     public function delete(
         Project $project,
         EntityManagerInterface $entityManager

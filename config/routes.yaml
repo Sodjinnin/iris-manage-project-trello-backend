@@ -24,30 +24,7 @@ api_login:
     methods: POST
     controller: App\Controller\UserController::login
 
-create_project:
-    path: /api/project/create
-    methods: POST
-    controller: App\Controller\ProjectController::create
 
-update_project:
-    path: /api/project/update/{id}
-    methods: PUT
-    controller: App\Controller\ProjectController::update
-
-find_project:
-    path: /api/project/find/{id}
-    methods: GET
-    controller: App\Controller\ProjectController::find
-
-app_project:
-    path: /api/project
-    methods: GET
-    controller: App\Controller\ProjectController::index
-
-delete_project:
-    path: /api/project/delete/{id}
-    methods: DELETE
-    controller: App\Controller\ProjectController::delete
 
 
 
