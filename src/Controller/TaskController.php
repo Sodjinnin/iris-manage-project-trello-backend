@@ -147,20 +147,41 @@ class TaskController extends AbstractController
         if (isset($data['status'])) {
             $task->setStatus($data['status']);
         }
-        if (isset($data['date'])) {
-            $task->setStatus($data['date']);
+
+
+        $owner = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy(['id' => $data['created_by']]);
+
+
+        $assign_to = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy(['id' => $data['assign_to']]);
+
+
+        $project = $this->entityManager
+            ->getRepository(Project::class)
+            ->findOneBy(['id' => $data['project']]);
+
+
+        if (!$owner) {
+            return $this->json(['error' => 'Creator not found'], 404);
         }
 
-        if (isset($data['owner_id'])) {
-            $owner = $userRepository->find($data['owner_id']);
-            if (!$owner) {
-                return $this->json(['error' => 'Owner not found'], 404);
-            }
-            $task->setOwner($owner);
+        if (!$assign_to) {
+            return $this->json(['error' => 'User not found'], 404);
         }
 
+        if (!$project) {
+            return $this->json(['error' => 'Project not found'], 404);
+        }
 
-        $task->setUpdatedAt(new \DateTimeImmutable());
+        $task->setCreatedBy($owner);
+        $task->setAssignTo($assign_to);
+        $task->setProject($project);
+
+
+        $task->setUpdatedAt(new \DateTime());
 
         $errors = $validator->validate($task);
         if (count($errors) > 0) {
@@ -175,23 +196,25 @@ class TaskController extends AbstractController
 
         return $this->json([
             'message' => 'Project updated successfully!',
-            'project' => [
-                'id' => $project->getId(),
-                'name' => $project->getName(),
-                'description' => $project->getDescription(),
-                'status' => $project->getStatus(),
-                'createdAt' => $project->getCreatedAt()?->format('Y-m-d H:i:s'),
-                'updatedAt' => $project->getUpdatedAt()?->format('Y-m-d H:i:s'),
-                'owner' => [
-                    'id' => $project->getOwner()?->getId(),
-                    'username' => $project->getOwner()?->getUsername(),
+            'task' => [
+                'id' => $task->getId(),
+                'name' => $task->getName(),
+                'description' => $task->getDescription(),
+                'status' => $task->getStatus(),
+                'createdAt' => $task->getCreatedAt()?->format('Y-m-d H:i:s'),
+                'updatedAt' => $task->getUpdatedAt()?->format('Y-m-d H:i:s'),
+                'creator' => [
+                    'id' => $owner->getId(),
+                    'username' => $owner->getUsername(),
                 ],
-                'members' => array_map(function (User $member) {
-                    return [
-                        'id' => $member->getId(),
-                        'username' => $member->getUsername(),
-                    ];
-                }, $project->getMembers()->toArray()),
+                'assignTo' => [
+                    'id' => $assign_to->getId(),
+                    'username' => $assign_to->getUsername(),
+                ],
+                'project' => [
+                    'id' => $project->getId(),
+                    'name' => $project->getName(),
+                ],
             ]
         ], 200);
     }
