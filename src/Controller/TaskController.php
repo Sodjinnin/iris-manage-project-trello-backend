@@ -24,7 +24,7 @@ class TaskController extends AbstractController
     }
 
 
-    #[Route('/tasks', name: 'app_task', methods: ['GET'])]
+    #[Route('/api/tasks', name: 'app_task', methods: ['GET'])]
     public function index(TaskRepository $taskRepository): JsonResponse
     {
         $projects = $taskRepository->findAll();
@@ -58,7 +58,7 @@ class TaskController extends AbstractController
 
 
 
-    #[Route('/tasks/create', name: 'create_task', methods: ['POST'])]
+    #[Route('/api/tasks', name: 'create_task', methods: ['POST'])]
     public function create(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -128,7 +128,7 @@ class TaskController extends AbstractController
         ], 201);
     }
 
-    #[Route('/tasks/update/{id}', name: 'update_task', methods: ['PUT'])]
+    #[Route('/api/tasks/{id}', name: 'update_task', methods: ['PUT'])]
     public function update(
         Task $task,
         Request $request,

@@ -24,23 +24,3 @@ api_login:
     methods: POST
     controller: App\Controller\UserController::login
 
-
-
-
-
-create_task:
-    path: /api/tasks/create
-    methods: POST
-    controller: App\Controller\TaskController::create
-
-
-app_task:
-    path: /api/tasks
-    methods: GET
-    controller: App\Controller\TaskController::index
-
-update_task:
-    path: /api/tasks/update/{id}
-    methods: PUT
-    controller: App\Controller\TaskController::update
-
