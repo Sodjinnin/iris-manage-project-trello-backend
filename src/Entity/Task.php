@@ -37,7 +37,7 @@ class Task
     #[ORM\Column(nullable: true)]
     private ?\DateTime $updatedAt = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'projectTasks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
 
