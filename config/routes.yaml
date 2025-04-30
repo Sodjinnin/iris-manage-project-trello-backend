@@ -49,3 +49,16 @@ delete_project:
     methods: DELETE
     controller: App\Controller\ProjectController::delete
 
+
+
+create_task:
+    path: /api/tasks/create
+    methods: POST
+    controller: App\Controller\TaskController::create
+
+
+app_task:
+    path: /api/tasks
+    methods: GET
+    controller: App\Controller\TaskController::index
+

@@ -207,10 +207,7 @@ final class ProjectController extends AbstractController
 
     #[Route('/project/find/{id}', name: 'find_project', methods: ['GET'])]
     public function find(
-        Project $project,
-        Request $request,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
+        Project $project
     ): JsonResponse {
 
         return $this->json([
