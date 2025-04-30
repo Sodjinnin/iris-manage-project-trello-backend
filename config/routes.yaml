@@ -39,3 +39,8 @@ app_task:
     methods: GET
     controller: App\Controller\TaskController::index
 
+update_task:
+    path: /api/tasks/update/{id}
+    methods: PUT
+    controller: App\Controller\TaskController::update
+
