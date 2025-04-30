@@ -6,7 +6,7 @@ controllers:
 
 api_me:
     path: /api/me
-    methods: POST
+    methods: GET
     controller: App\Controller\UserController::me
 
 api_register:
@@ -23,3 +23,8 @@ create_project:
     path: /api/project/create
     methods: POST
     controller: App\Controller\ProjectController::create
+
+app_project:
+    path: /api/project
+    methods: POST
+    controller: App\Controller\ProjectController::index
