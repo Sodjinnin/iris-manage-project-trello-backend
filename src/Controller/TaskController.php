@@ -27,7 +27,7 @@ class TaskController extends AbstractController
     #[Route('/api/tasks', name: 'app_task', methods: ['GET'])]
     public function index(TaskRepository $taskRepository): JsonResponse
     {
-        $projects = $taskRepository->findAll();
+        $projects = $taskRepository->findAll(['is_sub'=>false]);
 
         $projectData = array_map(function (Task $project) {
             return [
@@ -51,6 +51,30 @@ class TaskController extends AbstractController
                     'id' => $project->getProject()?->getId(),
                     'name' => $project->getProject()?->getName(),
                 ],
+                'subTask' => array_map(function (Task $member) {
+                    return [
+                        'id' => $member->getId(),
+                        'name' => $member->getName(),
+                        'description' => $member->getDescription(),
+                        'status' => $member->getStatus(),
+                        'schedule_date' => $member->getScheduleDate()?->format('Y-m-d H:i:s'),
+                        'priority' => $member->getPriority(),
+                        'createdAt' => $member->getCreatedAt()?->format('Y-m-d H:i:s'),
+                        'updatedAt' => $member->getUpdatedAt()?->format('Y-m-d H:i:s'),
+                        'creator' => [
+                            'id' => $member->getCreatedBy()?->getId(),
+                            'username' => $member->getCreatedBy()?->getUsername(),
+                        ],
+                        'assignTo' => [
+                            'id' => $member->getAssignTo()?->getId(),
+                            'username' => $member->getAssignTo()?->getUsername(),
+                        ],
+                        'project' => [
+                            'id' => $member->getProject()?->getId(),
+                            'name' => $member->getProject()?->getName(),
+                        ],
+                    ];
+                }, $project->getTasks()->toArray()),
 
             ];
         }, $projects);
@@ -108,9 +132,9 @@ class TaskController extends AbstractController
         $result->setProject($project);
         $result->setIsSub($data['is_sub']);
 
-        if ($data['is_sub']) {
+        if ($data['is_sub'] && isset($data['sub_task'])) {
             $task =  $this->entityManager
-                ->getRepository(Project::class)
+                ->getRepository(Task::class)
                 ->findOneBy(['id' => $data['sub_task']]);
             $result->addSubTask($task);
         }
