@@ -167,7 +167,7 @@ class TaskController extends AbstractController
 
         $owner = $this->entityManager
             ->getRepository(User::class)
-            ->findOneBy(['id' => $data['created_by']]);
+            ->findOneBy(['id' => $task->getCreatedBy()->getId()]);
 
 
         $assign_to = $this->entityManager
@@ -177,8 +177,9 @@ class TaskController extends AbstractController
 
         $project = $this->entityManager
             ->getRepository(Project::class)
-            ->findOneBy(['id' => $data['project']]);
+            ->findOneBy(['id' => $task->getProject()->getId()]);
 
+        $this->logActivity($project, $owner, 'created_project', $task->getName() . "mis à jour");
 
         if (!$owner) {
             return $this->json(['error' => 'Creator not found'], 404);
