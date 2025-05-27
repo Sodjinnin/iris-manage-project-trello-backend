@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Repository\ProjectRepository;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,9 +20,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class TaskController extends AbstractController
 {
     private $entityManager;
-    public function __construct(EntityManagerInterface $entityManager)
+    private $emailService;
+
+    public function __construct(EntityManagerInterface $entityManager, EmailService $emailService)
     {
         $this->entityManager = $entityManager;
+        $this->emailService = $emailService;
     }
 
 
@@ -89,6 +93,7 @@ class TaskController extends AbstractController
     public function create(
         Request $request,
         EntityManagerInterface $entityManager,
+        ValidatorInterface $validator
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
@@ -105,18 +110,15 @@ class TaskController extends AbstractController
             ->getRepository(User::class)
             ->findOneBy(['id' => $data['created_by']]);
 
-
         $assign_to = $this->entityManager
             ->getRepository(User::class)
             ->findOneBy(['id' => $data['assign_to']]);
-
 
         $project = $this->entityManager
             ->getRepository(Project::class)
             ->findOneBy(['id' => $data['project']]);
 
         $this->logActivity($project, $owner, 'created_project', "Une nouvelle tâche ajouter au projet'{$project->getName()}'");
-
 
         if (!$owner) {
             return $this->json(['error' => 'Owner not found'], 404);
@@ -145,6 +147,11 @@ class TaskController extends AbstractController
         $entityManager->persist($result);
         $entityManager->flush();
 
+        // Envoyer l'email de notification
+        if ($assign_to) {
+            $this->emailService->sendTaskAssignmentEmail($result, $assign_to);
+        }
+
         return $this->json([
             'message' => 'Task created successfully!',
             'task' => [
@@ -166,7 +173,6 @@ class TaskController extends AbstractController
                     'id' => $project->getId(),
                     'name' => $project->getName(),
                 ],
-
             ]
         ], 201);
     }
@@ -204,16 +210,13 @@ class TaskController extends AbstractController
             $task->setStatus($data['status']);
         }
 
-
         $owner = $this->entityManager
             ->getRepository(User::class)
             ->findOneBy(['id' => $task->getCreatedBy()->getId()]);
 
-
         $assign_to = $this->entityManager
             ->getRepository(User::class)
             ->findOneBy(['id' => $data['assign_to']]);
-
 
         $project = $this->entityManager
             ->getRepository(Project::class)
@@ -233,10 +236,11 @@ class TaskController extends AbstractController
             return $this->json(['error' => 'Project not found'], 404);
         }
 
+        // Vérifier si l'assignation a changé
+        $oldAssignee = $task->getAssignTo();
         $task->setCreatedBy($owner);
         $task->setAssignTo($assign_to);
         $task->setProject($project);
-
 
         $task->setUpdatedAt(new \DateTime());
 
@@ -250,6 +254,11 @@ class TaskController extends AbstractController
         }
 
         $entityManager->flush();
+
+        // Envoyer l'email de notification si l'assignation a changé
+        if ($oldAssignee !== $assign_to) {
+            $this->emailService->sendTaskAssignmentEmail($task, $assign_to);
+        }
 
         return $this->json([
             'message' => 'Project updated successfully!',
